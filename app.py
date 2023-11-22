@@ -65,11 +65,60 @@ def userRegister():
 
         return jsonify(token=str(access_token)), 201
     
-    # Close MySQL connection when application exits
-    @app.teardown_appcontext
-    def close_db(error):
-        if 'mysql_connection' in globals():
-            mysql_connection.close()
 
-    if __name__ == "__main__":
-        app.run(debug=True)
+@app.route("/userLogin", methods=['POST'])
+def userLogin():
+    if request.method == 'POST':
+        cursor = mysql_connection.cursor(dictionary=True)
+
+        email = request.json['email']
+        password = request.json['password']
+
+        #Retrieve user from MySQL
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            access_token = create_access_token(identity=email)
+            user['tokens'].append({'token': str(access_token)})
+
+            # Update user's tokens in MySQL
+            cursor.execute("UPDATE users SET tokens = %s WHERE email = %s",
+                           str(access_token), email)
+            mysql_connection.commit()
+
+            cursor.close()
+            return jsonify(token=str(access_token)), 201
+        
+        cursor.close()
+        return jsonify(message='Invalid Username/Password'), 401  
+
+
+@app.route("/getUserData", methods=['POST'])
+def getUserData():
+    if request.method == 'POST':
+        cursor = mysql_connection.cursor(dictionary=True)
+
+        # Retrieve user from MySQL based on the authentication token
+        cursor.execute("SELECT * FROM users WHERE tokens LIKE %s", ('%' + request.json['auth'] + '%',))
+        user = cursor.fetchone()
+
+        cursor.close()
+
+        if user:
+            return jsonify(user), 201
+        
+        return jsonify(message='Something went wrong'), 401
+    
+
+
+# Close MySQL connection when application exits
+@app.teardown_appcontext
+def close_db(error):
+    if 'mysql_connection' in globals():
+        mysql_connection.close()
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
