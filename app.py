@@ -1,5 +1,10 @@
 import mysql.connector
 from flask import Flask, request, jsonify, session
+import datetime
+import tensorflow as tf
+import tensorflow_hub as hub
+import numpy as np
+from tensorflow import keras
 from flask_jwt_extended import create_access_token
 import bcrypt
 
@@ -111,13 +116,57 @@ def getUserData():
         return jsonify(message='Something went wrong'), 401
     
 
+@app.route("/getAllServices", methods=['GET'])
+def getAllServices():
+    cursor = mysql_connection.cursor(dictionary=True)
 
+    # Retrieve all services from MySQL
+    cursor.execute("SELECT * FROM services")
+    services = cursor.fethcall()
+
+    cursor.close()
+
+    # Convert the result to JSON
+    services_json = json.dumps(services, indent=2)
+    services_list = json.loads(services_json)
+
+    return jsonify(services_list), 201
+
+@app.route("/addComments", methods=['POST'])
+def addComments():
+    comment = request.json['comment']
+    uid = request.json['uid']
+    pid = request.json['pid']
+    date = datetime.datetime.now()
+
+    try:
+        model = keras.models.load_model('sentimentAnalysis.h5', custom_objects={'KerasLAyer': hub.KerasLayer})
+        pred = model.predict([comment])[0][0]
+        sentiment = 1 if pred >= 0.5 else 0
+
+        cursor = mysql_connection.cursor(dictionary=True)
+
+        # Retrieve username based on user ID
+        cursor.execute("SELECT username FROM users WHERE _id = %s", (uid,))
+        user_data = cursor.fetchone()
+        username = user_data['username']
+
+        # Insert comment into MySQL
+        cursor.execute("INSERT INTO comments (uid, pid, username, comment, sentiment, date) VALUES (%s, %s, %s, %s, %s, %s)",
+                       (uid, pid, username, comment, sentiment, date))
+        mysql_connection.commit()
+
+        cursor.close()
+        return jsonify(message='Thank you for your Feedback!'), 201
+    
+    except Exception as e:
+        print(e)
+        return jsonify(message='Something went Wrong'), 401
 # Close MySQL connection when application exits
 @app.teardown_appcontext
 def close_db(error):
     if 'mysql_connection' in globals():
         mysql_connection.close()
-
 
 
 if __name__ == "__main__":
