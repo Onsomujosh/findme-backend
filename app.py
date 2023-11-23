@@ -7,6 +7,7 @@ import numpy as np
 from tensorflow import keras
 from flask_jwt_extended import create_access_token
 import bcrypt
+import json
 
 app = Flask(__name__)
 
@@ -37,6 +38,9 @@ def userRegister():
 
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         existing_username = cursor.fetchone()
+
+        cursor.execute("SELECT * from USERS WHERE phone = %s", (phone,))
+        existing_phone = cursor.fetchone()
 
         if existing_email:
             cursor.close()
