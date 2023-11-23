@@ -12,10 +12,10 @@ app = Flask(__name__)
 
 # Set up MySQL connection
 mysql_connection = mysql.connector.connect(
-    host='',
-    user='',
-    password='',
-    database=''
+    host='127.0.0.1',
+    user='root',
+    password='2017',
+    database='findme'
 )
 
 @app.route('/testpage')
@@ -50,7 +50,7 @@ def userRegister():
         
         if request.json['password'] != request.json['cpassword']:
             cursor.close()
-            return jsonify(message='PAssword Not MAtching!'), 401
+            return jsonify(message='Password Not Matching!'), 401
         
         # Hash Passwords
         hashpw = bcrypt.hashpw(request.json['password'].encode('utf-8'), bcrypt.gensalt())
@@ -122,7 +122,7 @@ def getAllServices():
 
     # Retrieve all services from MySQL
     cursor.execute("SELECT * FROM services")
-    services = cursor.fethcall()
+    services = cursor.fetchall()
 
     cursor.close()
 
@@ -140,7 +140,7 @@ def addComments():
     date = datetime.datetime.now()
 
     try:
-        model = keras.models.load_model('sentimentAnalysis.h5', custom_objects={'KerasLAyer': hub.KerasLayer})
+        model = keras.models.load_model('sentimentAnalysis.h5', custom_objects={'KerasLayer': hub.KerasLayer})
         pred = model.predict([comment])[0][0]
         sentiment = 1 if pred >= 0.5 else 0
 
@@ -162,6 +162,30 @@ def addComments():
     except Exception as e:
         print(e)
         return jsonify(message='Something went Wrong'), 401
+    
+
+@app.route("/logoutUser", methods=['POST'])
+def logoutUser():
+    if request.method =='POST':
+        cursor = mysql_connection.cursor(dictionary=True)
+
+        # Retrieve user from MySQL based on the authentication token
+        cursor.execute("SELECT * FROM users WHERE token LIKE %s", ('%' + request.json['auth'] + '%',))
+        user = cursor.fetchone()
+
+        if user:
+            # Clear tokens for logout
+            cursor.execute("UPDATE users SET tokens = %s WHERE _id = %s", ('[]', user['_id']))
+            mysql_connection.commit()
+
+            cursor.close()
+
+            return jsonify(message='Logout Successful!'), 201
+        
+        return jsonify(message='Something went wrong!'), 401
+    
+
+
 # Close MySQL connection when application exits
 @app.teardown_appcontext
 def close_db(error):
