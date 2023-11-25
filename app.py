@@ -15,11 +15,11 @@ app = Flask(__name__)
 mysql_connection = mysql.connector.connect(
     host='127.0.0.1',
     user='root',
-    password='2017',
+    password='',
     database='findme'
 )
 
-@app.route('/testpage')
+@app.route('/', strict_slashes=False)
 def testpage():
     return jsonify(message='all good!')
 
@@ -198,4 +198,4 @@ def close_db(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
