@@ -13,11 +13,17 @@ app = Flask(__name__)
 
 # Set up MySQL connection
 mysql_connection = mysql.connector.connect(
-    host='127.0.0.1',
-    user='root',
-    password='',
-    database='findme'
+    host=os.getenv('HBNB_MYSQL_HOST'),
+    user=os.getenv('HBNB_MYSQL_USER'),
+    password=os.getenv('HBNB_MYSQL_PWD'),
+    database=os.getenv('HBNB_MYSQL_DB')
 )
+#mysql_connection = mysql.connector.connect(
+#    host='127.0.0.1',
+#    user='root',
+#    password='',
+#    database='findme'
+#)
 
 @app.route('/', strict_slashes=False)
 def testpage():
