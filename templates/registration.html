@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+   <head>
+       <title>RegistrationForm</title>
+       <link rel="stylesheet" href="style.css">
+       <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   </head>
+   <body>
+<div class="registration-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <img src="C:\Users\HP\Downloads\registration.jpg" width="50%">
+            </div>
+            <div class="col-2">
+                <div class="form-container">
+                    <div class="form-button">
+                        <span onclick="login()">Login</span>
+                        <span onclick="register()">Register</span>
+                        <hr id="indicator">
+                    </div>
+                    <form id="LoginForm">
+                        <input type="text" placeholder="User Name">
+                        <input type="password" placeholder="Password">
+                        <button type="submit" class="button">Login</button>
+                        <a href="">Forgot Password</a>
+                    </form>
+                    <form id="Registration-Form">
+                        <input type="text" placeholder="User Name">
+                        <input type="email" placeholder="Email">
+                        <input type="password" placeholder="Password">
+                        <button type="submit" class="button">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr style="margin: 30px 0;">
+<div class="footer">
+    <div class="btn">
+        <div class="icon">
+            <i href="facebook.com" class="fa fa-facebook" aria-hidden="true"></i>
+        </div>
+        <span>Facebook</span>
+    </div>
+    <div class="btn">
+        <div class="icon">
+            <i href="x.com" class="fa fa-twitter" aria-hidden="true"></i>
+        </div>
+        <span>X</span>
+    </div>  
+    <div class="btn">
+        <div class="icon">
+            <i href="instagram.com" class="fa fa-instagram" aria-hidden="true"></i>
+        </div>
+        <span>Instagram</span>
+    </div>  
+    <div class="btn">
+        <div class="icon">
+            <i href="youtube.com" class="fa fa-youtube" aria-hidden="true"></i>
+        </div>
+        <span>Youtube</span>
+    </div>      
+</div>
+<!----------------------------------------Js for the form------------------------------------------------->
+<script>
+    var LoginForm = document.getElementById("LoginForm");
+    var RegistrationForm = document.getElementById("Registration-Form");
+    var Indicator = document.getElementById("indicator");
+        function register(){
+            RegistrationForm.style.transform = "translateX(0px)";
+            LoginForm.style.transform = "translateX(0px)";
+            Indicator.style.transform = "translateX(100px)";
+        }
+        function login(){
+            RegistrationForm.style.transform = "translateX(300px)";
+            LoginForm.style.transform = "translateX(300px)";
+            Indicator.style.transform = "translateX(0px)";
+        }
+</script>
+   </body>
+</html>
