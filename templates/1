@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
    <head>
-       <title>ServiceStore</title>
-       <link rel="stylesheet" href="style.css">
+       <title>FindMe</title>
+       <link rel="stylesheet" href="/style.css">
        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
    </head>
    <body>
         <div class="canvas">
@@ -16,7 +17,7 @@
                         <ul>
                             <li><a href="index.html">Home</a></li>
                             <li><a href="#about">About</a></li>
-                            <li><a href="#services">Services</a></li>
+                            <li><a href="services.html">Services</a></li>
                             <li><a href="registration.html">Signin/Signup</a></li>
                         </ul>
                     </nav> 
@@ -29,7 +30,7 @@
                             that comes with knowing that your home is in the hands
                             of dedicated professionals.
                         </p>
-                        <a href="" class="button">Peep in &#x2192;</a>
+                        <a href="services.html" class="button">Peep in &#x2192;</a>
                     </div>
                     <div class="column2-image">
                         <img src="C:\Users\HP\Downloads\cleaningimage.jpg" width="125px">
@@ -44,6 +45,33 @@
         <div class="column3"></div>
         <div class="column3"></div>
     </div>
+</div>
+<hr style="margin: 30px 0;">
+<div class="footer">
+    <div class="btn">
+        <div class="icon">
+            <i href="facebook.com" class="fa fa-facebook" aria-hidden="true"></i>
+        </div>
+        <span>Facebook</span>
+    </div>
+    <div class="btn">
+        <div class="icon">
+            <i href="x.com" class="fa fa-twitter" aria-hidden="true"></i>
+        </div>
+        <span>X</span>
+    </div>  
+    <div class="btn">
+        <div class="icon">
+            <i href="instagram.com" class="fa fa-instagram" aria-hidden="true"></i>
+        </div>
+        <span>Instagram</span>
+    </div>  
+    <div class="btn">
+        <div class="icon">
+            <i href="youtube.com" class="fa fa-youtube" aria-hidden="true"></i>
+        </div>
+        <span>Youtube</span>
+    </div>      
 </div>
    </body>
 </html>

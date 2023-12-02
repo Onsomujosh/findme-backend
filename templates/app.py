@@ -31,19 +31,7 @@ mysql_connection = mysql.connector.connect(
 
 @app.route('/', strict_slashes=False)
 def home_page():
-    return render_template('/index.html')
-
-@app.route('/registration.html', strict_slashes=False)
-def registration_page():
-    return render_template('registration.html')
-
-@app.route('/index.html', strict_slashes=False)
-def index_page():
     return render_template('index.html')
-
-@app.route('/services.html', strict_slashes=False)
-def services_page():
-    return render_template('services.html')
 
 @app.route("/userRegister", methods=['POST'])
 def userRegister():
