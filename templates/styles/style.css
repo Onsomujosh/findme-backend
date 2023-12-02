@@ -240,7 +240,7 @@ form a{
 .fa {  
     padding: 20px;  
   text-align: center;  
-    margin: 5px 2px;  
+    margin: 3px 3px;  
     font-size: 30px;  
     width: 50px;
   }  
@@ -264,7 +264,13 @@ form a{
 
   .fa-youtube {  
     background: #bb0000;  
-    color: white;  
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px; /* Set an appropriate height */
+    width: 50px; /* Set an appropriate width */
+    border-radius: 50%;	
   }  
 
 
