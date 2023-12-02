@@ -1,5 +1,5 @@
 import mysql.connector
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, render_template
 import datetime
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -8,26 +8,30 @@ from tensorflow import keras
 from flask_jwt_extended import create_access_token
 import bcrypt
 import json
+from models import storage
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from os import environ
 
 app = Flask(__name__)
 
 # Set up MySQL connection
 mysql_connection = mysql.connector.connect(
-    host=os.getenv('FINDME_MYSQL_HOST'),
-    user=os.getenv('FINDME_MYSQL_USER'),
-    password=os.getenv('FINDME_MYSQL_PWD'),
-    database=os.getenv('FINDME_MYSQL_DB')
+    host='127.0.0.1',
+    user='findme',
+    password='findme',
+    database='findme'
 )
-#mysql_connection = mysql.connector.connect(
-#    host='127.0.0.1',
-#    user='root',
-#    password='',
-#    database='findme'
-#)
+
+# @app.route('/', strict_slashes=False)
+# def testpage():
+#    return jsonify(message='all good!')
 
 @app.route('/', strict_slashes=False)
-def testpage():
-    return jsonify(message='all good!')
+def home_page():
+    return render_template('index.html')
 
 @app.route("/userRegister", methods=['POST'])
 def userRegister():
@@ -141,6 +145,7 @@ def getAllServices():
     services_list = json.loads(services_json)
 
     return jsonify(services_list), 201
+
 
 @app.route("/addComments", methods=['POST'])
 def addComments():

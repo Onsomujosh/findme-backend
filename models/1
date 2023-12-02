@@ -8,11 +8,14 @@ from sqlalchemy.orm import sessionmaker
 from models import storage_type
 
 # create a session and bind it to the base in sqlalchemy
+Session = sessionmaker(bind=mysql_connection)
+session = Session()
+Base.metadata.create_all(mysql_connection)
 
 Base = declarative_base()
 
 
-class BaseModel:
+class BaseModel(Base):
     """A base class for all models
 
     Attributes:
@@ -20,6 +23,7 @@ class BaseModel:
     created_at (sqlalchemy DateTime): The datetime at creation
     updated_at (sqlalchemy DateTime): The datetime of last update
     """
+    __tablename__='findme'
     
     id = Column(String(60),
                 nullable=False,
