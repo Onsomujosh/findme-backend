@@ -2,26 +2,25 @@ import mysql.connector
 from flask import Flask, request, jsonify, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import ForeignKey
-from datetime import datetime
+from flask_jwt_extended import create_access_token
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 import tensorflow as tf
 import tensorflow_hub as hub
-import numpy as np
 from tensorflow import keras
-from flask_jwt_extended import create_access_token
+import numpy as np
 import bcrypt
 import json
+from datetime import datetime
 from os import environ
-from models.base_model import BaseModel, Base
-from models import storage_type
-
 
 #Create a Flask Instance
 app = Flask(__name__)
+
 #Add Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:///findme.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprication warning
 #Secret Key
 app.config['SECRET_KEY'] = ""
 
@@ -29,42 +28,41 @@ app.config['SECRET_KEY'] = ""
 db =SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-#Create Models
-class User(BaseModel, Base):
+#Define Models
+class User(db.Model):
     """User definitions"""
 
     __tablename__ = "users"
 
-    if storage_type == 'db':
-        email = Column(String(128), nullable=False)
-        password = Column(String(128), nullable=False)
-        first_name = Column(String(128), nullable=True)
-        last_name = Column(String(128), nullable=True)
-        places = relationship('Place', backref='user',
-                              cascade='all, delete, delete-orphan')
-        reviews = relationship('Review', backref='user',
-                               cascade='all, delete, delete-orphan')
-    else:
-        email = ""
-        password = ""
-        first_name = ""
-        last_name = ""
+    id = db.Column(db.String(60), primary_key=True)
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
+    places = relationship('Place', backref='user', cascade='all, delete, delete-orphan')
+    reviews = relationship('Review', backref='user', cascade='all, delete, delete-orphan')
 
 
-class Review(BaseModel, Base):
+class Place(db.Model):
+    """Maybe change to service ama?"""
+    __tablename__ = 'places'
+
+    id = db.Column(db.String(60), primamry_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    user_id = db.Column(db.String(60), db.ForeignKey(users.id), nullable=False)
+    comments = db.relationship('Review', backref='place', cascade='all, delete, delete-orphan')
+
+
+
+class Review(db.Model):
     """ Review class to store review information """
 
     __tablename__ = 'reviews'
 
-    if storage_type == 'db':
-        place_id = Column(String(60), ForeignKey("places.id"), nullable=False)
-        user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
-        text = Column(String(1024), nullable=False)
-
-    else:
-        place_id = ""
-        user_id = ""
-        text = ""
+    id = db.Column(db.String(60), primary_key=True)
+    place_id = Column(String(60), ForeignKey("places.id"), nullable=False)
+    user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
+    text = Column(String(1024), nullable=False)
 
 
     #Create A String
