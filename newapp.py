@@ -12,7 +12,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow import keras
 import numpy as np
-from flask_bcrypt import bcrypt
+from flask_bcrypt import Bcrypt
 import json
 import datetime
 from os import environ
@@ -21,21 +21,22 @@ from os import environ
 app = Flask(__name__)
 
 # Initialize the Database
-db.init_app(app)
+#db = SQLAlchemy(app)
+#migrate = Migrate(app, db)
+#db.init_app(app)
 
 #Add Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://findme:findme@localhost/findme'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprication warning
 #Secret Key
-app.config['SECRET_KEY'] = ""
+app.config['SECRET_KEY'] = "findme"
 
 # Create the SQLAlchemy engine
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
-#Initialize the Database
-db =SQLAlchemy(app)
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
+#db.init_app(app)
 #Initialize Bcrypt
 bcrypt = Bcrypt(app)
 
@@ -45,23 +46,33 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.String(60), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
-    first_name = Column(String(128), nullable=True)
-    last_name = Column(String(128), nullable=True)
+    first_name = Column(String(128), nullable=False)
+    last_name = Column(String(128), nullable=False)
+    Contact = Column(String(128), nullable=False)
     places = db.relationship('Place', backref='user', cascade='all, delete, delete-orphan')
     reviews = db.relationship('Review', backref='user', cascade='all, delete, delete-orphan')
 
+class Employer(db.Model):
+    """Employer definitions"""
+    __tablename__ = "employers"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128), nullable=False)
+    Contact = Column(String(128), nullable=False)
 
 class Place(db.Model):
     """Maybe change to service ama?"""
 
     __tablename__ = 'places'
 
-    id = db.Column(db.String(60), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
-    user_id = db.Column(db.String(60), db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     comments = db.relationship('Review', backref='place', cascade='all, delete, delete-orphan')
 
 
@@ -70,11 +81,11 @@ class Service(db.Model):
 
     ___tablename__ = 'services'
 
-    id = db.Column(db.String(60), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.String(255), nullable=True)
-    user_id = db.Column(db.String(60), db.ForeignKey('users.id'), nullable=False)
-    comments = db.relationship('Review', backref='service', cascade='all, delete, delete-orphan')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#    comments = db.relationship('Review', backref='service', cascade='all, delete, delete-orphan', foreign_keys='Review.place_id')
 
     def __repr__(self):
         return f'<Service {self.name}>'
@@ -85,9 +96,9 @@ class Review(db.Model):
 
     __tablename__ = 'reviews'
 
-    id = db.Column(db.String(60), primary_key=True)
-    place_id = db.Column(String(60), db.ForeignKey('places.id'), nullable=False)
-    user_id = db.Column(String(60), db.ForeignKey('users.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     text = db.Column(String(1024), nullable=False)
 
 
@@ -102,12 +113,12 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")   
 
 # Set up MySQL connection
-mysql_connection = mysql.connector.connect(
-    host='127.0.0.1',
-    user='findme',
-    password='findme',
-    database='findme'
-)
+# mysql_connection = mysql.connector.connect(
+#    host='127.0.0.1',
+#    user='findme',
+#    password='findme',
+#    database='findme'
+#)
 
 # @app.route('/', strict_slashes=False)
 # def testpage():
@@ -129,7 +140,21 @@ def index_page():
 def services_page():
     return render_template('services.html')
 
-@app.route("/userRegister", methods=['POST'])
+@app.route('/registration.html', methods=['GET', 'POST'])
+def add_register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        employer = Employer(first_name=username, email=email, password=password, contact=contact)
+        db.session.add(employer)
+        db.session.commit()
+    return render_template('services.html')
+
+
+
+
+@app.route("/UserRegister", methods=['GET', 'POST'])
 def userRegister():
     if request.method == 'POST':
         cursor = mysql_connection.cursor(dictionary=True)

@@ -21,16 +21,16 @@
                         <span onclick="register()">Register</span>
                         <hr id="indicator">
                     </div>
-                    <form id="LoginForm">
-                        <input type="text" placeholder="User Name">
+                    <form id="LoginForm" method="post" action="/login">
+                        <input type="text" placeholder="UserName">
                         <input type="password" placeholder="Password">
                         <button type="submit" class="button">Login</button>
                         <a href="">Forgot Password</a>
                     </form>
-                    <form id="Registration-Form">
-                        <input type="text" placeholder="User Name">
-                        <input type="email" placeholder="Email">
-                        <input type="password" placeholder="Password">
+                    <form id="Registration-Form" method="post" action="/registration.html">
+                        <input type="text" name="username" placeholder="UserName">
+                        <input type="email" name="email" placeholder="Email">
+                        <input type="password" name="password" placeholder="Password">
                         <button type="submit" class="button">Register</button>
                     </form>
                 </div>
