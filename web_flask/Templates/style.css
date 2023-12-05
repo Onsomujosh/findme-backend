@@ -173,7 +173,7 @@ form a{
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05); 
 }
 .nav-bar-white .navlinks li a{
-    color: white;
+    color: red;
 }
 
 /* Style the navigation links */
@@ -190,3 +190,89 @@ form a{
     border-radius: 5px;
     margin-left: auto;
 }
+
+.list-container{
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.left-col{
+    flex-basis: 70%;
+}
+
+.right-col{
+    flex-basis: 25%;
+}
+
+.left-col h1{
+    color: aqua;
+    font-weight: 80px;
+    margin-bottom: 30px;    
+}
+
+.worker{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 30px 0;
+    border-radius: 20 px;
+    border-top: 1px solid #ccc;
+    background-color: red;    
+}
+
+.worker-info{
+    flex-basis: 58%;
+    color: #555;
+    background-color: aqua;
+    border-radius: 20px;
+}
+
+.worker-info h3{
+    font-weight: 600;
+    color: #333;
+    font-size: 22px;
+    margin: 4px 0;
+}
+
+/*-----------------------------------footer icons-------------------------------------------------------*/
+.fa {  
+    padding: 20px;  
+  text-align: center;  
+    margin: 5px 2px;  
+    font-size: 30px;  
+    width: 50px;
+  }  
+
+  .fa-facebook {  
+    background: #3B5998;  
+    color: white;  
+  }  
+  .fa-twitter {  
+    background: #55ACEE;  
+    color: white;  
+  }
+
+  .fa-instagram {  
+    background: #f09433; 
+    background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); 
+    background: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+    background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );  
+ } 
+
+  .fa-youtube {  
+    background: #bb0000;  
+    color: white;  
+  }  
+
+
+  .btn{
+    display: inline-block;
+    margin: 0 100px;
+  }
+
+  .footer{
+    background-color:cornsilk;
+  }
