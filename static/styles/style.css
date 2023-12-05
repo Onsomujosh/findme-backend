@@ -99,7 +99,7 @@ p{
     padding: 20px 0;
     margin: auto;
     box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .form-container span{

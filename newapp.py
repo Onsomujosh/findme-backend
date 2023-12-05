@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from flask import Flask, request, jsonify, session, render_template
+from flask import Flask, request, jsonify, session, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import create_access_token
@@ -51,7 +51,8 @@ class User(db.Model):
     password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=False)
     last_name = Column(String(128), nullable=False)
-    Contact = Column(String(128), nullable=False)
+    contact = Column(String(128), nullable=False)
+    location = Column(String(128), nullable=False)
     places = db.relationship('Place', backref='user', cascade='all, delete, delete-orphan')
     reviews = db.relationship('Review', backref='user', cascade='all, delete, delete-orphan')
 
@@ -63,7 +64,7 @@ class Employer(db.Model):
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=False)
-    Contact = Column(String(128), nullable=False)
+    contact = Column(String(128), nullable=False)
 
 class Place(db.Model):
     """Maybe change to service ama?"""
@@ -140,19 +141,37 @@ def index_page():
 def services_page():
     return render_template('services.html')
 
+@app.route('/application.html', strict_slashes=False)
+def application_page():
+    return render_template('application.html')
+
 @app.route('/registration.html', methods=['GET', 'POST'])
 def add_register():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        contact = request.form['contact']
         employer = Employer(first_name=username, email=email, password=password, contact=contact)
         db.session.add(employer)
         db.session.commit()
     return render_template('services.html')
 
-
-
+@app.route('/application.html', methods=['GET', 'POST'])
+def add_applicant():
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        email = request.form['email']
+        password = request.form['password']
+        contact = request.form['contact']
+        location = request.form['location']
+        applicant = User(first_name=firstname, last_name=lastname, email=email, password=password, contact=contact, location=location)
+        db.session.add(applicant)
+        db.session.commit()
+    return render_template('services.html')
+        
+        
 
 @app.route("/UserRegister", methods=['GET', 'POST'])
 def userRegister():
