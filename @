@@ -1,36 +1,114 @@
-import mysql.connector
+from sqlalchemy import create_engine
 from flask import Flask, request, jsonify, session, render_template
-import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_jwt_extended import create_access_token
+from flask_wtf import FlaskForm
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 import tensorflow as tf
 import tensorflow_hub as hub
-import numpy as np
 from tensorflow import keras
-from flask_jwt_extended import create_access_token
-import bcrypt
+import numpy as np
+from flask_bcrypt import Bcrypt
 import json
-from models import storage
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
+import datetime
 from os import environ
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 
+#Create a Flask Instance
 app = Flask(__name__)
 
-# Set up MySQL connection
-mysql_connection = mysql.connector.connect(
-    host='127.0.0.1',
-    user='findme',
-    password='findme',
-    database='findme'
-)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI = 'mysql://findme@localhost/findme'
-app.config['SECRET_KEY'] = "findme"
-ds = SQLAlchemy(app)
-migrate = Migrate(app.ds)
+# Initialize the Database
+#db = SQLAlchemy(app)
+#migrate = Migrate(app, db)
+#db.init_app(app)
 
+#Add Database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://findme:findme@localhost/findme'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprication warning
+#Secret Key
+app.config['SECRET_KEY'] = "findme"
+
+# Create the SQLAlchemy engine
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+#db.init_app(app)
+#Initialize Bcrypt
+bcrypt = Bcrypt(app)
+
+#Define Models
+class User(db.Model):
+    """User definitions"""
+
+    __tablename__ = "users"
+
+    id = db.Column(db.String(60), primary_key=True)
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
+    places = db.relationship('Place', backref='user', cascade='all, delete, delete-orphan')
+    reviews = db.relationship('Review', backref='user', cascade='all, delete, delete-orphan')
+
+
+class Place(db.Model):
+    """Maybe change to service ama?"""
+
+    __tablename__ = 'places'
+
+    id = db.Column(db.String(60), primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    user_id = db.Column(db.String(60), db.ForeignKey('users.id'), nullable=False)
+    comments = db.relationship('Review', backref='place', cascade='all, delete, delete-orphan')
+
+
+class Service(db.Model):
+    """Service class to store service information"""
+
+    ___tablename__ = 'services'
+
+    id = db.Column(db.String(60), primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+    user_id = db.Column(db.String(60), db.ForeignKey('users.id'), nullable=False)
+    comments = db.relationship('Review', backref='service', cascade='all, delete, delete-orphan')
+
+    def __repr__(self):
+        return f'<Service {self.name}>'
+    
+
+class Review(db.Model):
+    """ Review class to store review information """
+
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.String(60), primary_key=True)
+    place_id = db.Column(String(60), db.ForeignKey('places.id'), nullable=False)
+    user_id = db.Column(String(60), db.ForeignKey('users.id'), nullable=False)
+    text = db.Column(String(1024), nullable=False)
+
+
+    #Create A String
+    def __repr__(self):
+        return '<Name %r>' % self.name
+    
+# Create a Form Class
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    submit = SubmitField("Submit")   
+
+# Set up MySQL connection
+# mysql_connection = mysql.connector.connect(
+#    host='127.0.0.1',
+#    user='findme',
+#    password='findme',
+#    database='findme'
+#)
 
 # @app.route('/', strict_slashes=False)
 # def testpage():
@@ -52,12 +130,23 @@ def index_page():
 def services_page():
     return render_template('services.html')
 
-@app.route("/userRegister", methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
+def add_register():
+#if request.method == 'POST':
+    username = request.form['UserName']
+    email = request.form['Email']
+    password = request.form['Password']
+    user = User(first_name=Username, email=email, password=password)
+    db.session.add(user)
+    db.session.commit()
+    return render_template('registration.html')
+
+@app.route("/UserRegister", methods=['POST'])
 def userRegister():
     if request.method == 'POST':
         cursor = mysql_connection.cursor(dictionary=True)
 
-        # Check if email, usernam e, and phone already exist
+        # Check if email, username, and phone already exist
         email = request.json['email']
         username = request.json['username']
         phone = request.json['phone']
@@ -86,16 +175,17 @@ def userRegister():
             return jsonify(message='Password Not Matching!'), 401
         
         # Hash Passwords
-        hashpw = bcrypt.hashpw(request.json['password'].encode('utf-8'), bcrypt.gensalt())
-        hashCpw = bcrypt.hashpw(request.json['cpassword'].encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.generate_password_hash(request.json['password']).decode('utf-8')
 
         # Generate access token
         access_token = create_access_token(identity=email)
 
         # Insert user into MySQL
-        cursor.execute("INSERT INTO users (email, password, cpassword, username, phone, tokens) VALUES (%s, %s, %s, %s, %s, %s)", (email, hashpw, hashCpw, username, phone, str(access_token)))
+        cursor.execute("INSERT INTO users (email, password, username, phone, tokens) VALUES (%s, %s, %s, %s, %s, %s)", 
+                       (email, hashed_password, username, phone, str(access_token)))
         mysql_connection.commit()
 
+        # Close cursor after commit
         cursor.close()
 
         # Set session email (if needed)
@@ -121,8 +211,8 @@ def userLogin():
             user['tokens'].append({'token': str(access_token)})
 
             # Update user's tokens in MySQL
-            cursor.execute("UPDATE users SET tokens = %s WHERE email = %s",
-                           str(access_token), email)
+            cursor.execute("UPDATE users SET tokens = JSON_ARRAY_APPEND(tokens, '$', %s) WHERE email = %s",
+                           (str(access_token), email))
             mysql_connection.commit()
 
             cursor.close()
@@ -228,4 +318,7 @@ def close_db(error):
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        # Create the database tables
+        db.create_all()
     app.run(host='0.0.0.0', port=5000)

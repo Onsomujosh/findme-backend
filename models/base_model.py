@@ -6,6 +6,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, DATETIME
 from sqlalchemy.orm import sessionmaker
 from models import storage_type
+from flask_sqlalchemy import SQLAlchemy
+
+ds = SQLAlchemy()
 
 # create a session and bind it to the base in sqlalchemy
 
@@ -21,7 +24,7 @@ class BaseModel:
     updated_at (sqlalchemy DateTime): The datetime of last update
     """
     
-    id = Column(String(60),
+    id = ds.Column(String(60),
                 nullable=False,
                 primary_key=True,
                 unique=True)
