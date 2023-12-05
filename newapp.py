@@ -139,7 +139,11 @@ def index_page():
 
 @app.route('/services.html', strict_slashes=False)
 def services_page():
-    return render_template('services.html')
+    # Fetch services data from the database
+    services_data = getAllServices()
+
+    #Pass the services data to the template
+    return render_template('services.html', services=services_data)
 
 @app.route('/application.html', strict_slashes=False)
 def application_page():
@@ -273,17 +277,24 @@ def getUserData():
 
 @app.route("/getAllServices", methods=['GET'])
 def getAllServices():
-    cursor = mysql_connection.cursor(dictionary=True)
+    #cursor = mysql_connection.cursor(dictionary=True)
 
     # Retrieve all services from MySQL
-    cursor.execute("SELECT * FROM services")
-    services = cursor.fetchall()
+    services = Service.query.all()
 
-    cursor.close()
+    # Convert the services to a list of dictionaries
+    services_list = [
+        {
+            "id": service.id,
+            "name": service.name,
+            "description": service.description
+        }
+        for service in service
+    ]
 
     # Convert the result to JSON
-    services_json = json.dumps(services, indent=2)
-    services_list = json.loads(services_json)
+    #services_json = json.dumps(services, indent=2)
+    #services_list = json.loads(services_json)
 
     return jsonify(services_list), 201
 

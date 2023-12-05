@@ -8,6 +8,7 @@
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    </head>
    <body>
+        <!-- Navigation code -->
        <nav id="navbar" class="nav-bar-white">
             <img src="" alt="">
             <ul class="navlinks">
@@ -18,102 +19,40 @@
             <a href="registration.html" class="register">Register</a>
             <i class="fas fa-bars" onclick="togglebtn()"></i>
        </nav>
+       <!-- End of Navigation -->
+
        <div class="container">
         <div class="list-container">
             <div class="left-col">
                 <h1>Call Me</h1>
-                <div class="Worker">
-                    <div class="worker-info">
-                        <h3>Eric Wambugu</h3>
-                        <h3>kitengela</h3>
-                        <h3>Laundry Services</h3>
-                        <h3>0723999999</h3>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <div class="charges">
-                            <h4>400/Basket</h4>
-                        </div>
-                    </div>
-                </div>
-                <hr style="margin: 20px 0;">
-                <div class="Worker">
-                    <div class="worker-info">
-                        <h3>Eric Wambugu</h3>
-                        <h3>kitengela</h3>
-                        <h3>Laundry Services</h3>
-                        <h3>0723999999</h3>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <div class="charges">
-                            <h4>400/Basket</h4>
-                        </div>
-                    </div>
-                </div>
-                <hr style="margin: 20px 0;">
-                <div class="Worker">
-                    <div class="worker-info">
-                        <h3>Eric Wambugu</h3>
-                        <h3>kitengela</h3>
-                        <h3>Laundry Services</h3>
-                        <h3>0723999999</h3>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <div class="charges">
-                            <h4>400/Basket</h4>
-                        </div>
-                    </div>
-                </div>
-                <hr style="margin: 20px 0;">
-                <div class="Worker">
-                    <div class="worker-info">
-                        <h3>Eric Wambugu</h3>
-                        <h3>kitengela</h3>
-                        <h3>Laundry Services</h3>
-                        <h3>0723999999</h3>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <div class="charges">
-                            <h4>400/Basket</h4>
-                        </div>
-                    </div>
-                </div>
-                <hr style="margin: 20px 0;">
-                <div class="Worker">
-                    <div class="worker-info">
-                        <h3>Eric Wambugu</h3>
-                        <h3>kitengela</h3>
-                        <h3>Laundry Services</h3>
-                        <h3>0723999999</h3>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
-                        <div class="charges">
-                            <h4>400/Basket</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                
 
-                
+                <!-- Loop through services and dynamically display them-->
+                {% for service in services %}
+                <div class="Worker">
+                    <div class="worker-info">
+                        <h3>{{ service.name }}</h3>
+                        <h3>{{ service.location }}</h3>
+                        <h3>{{ service.description }}</h3>
+                        <h3>{{ service.contact }}</h3>
+                        <!-- Add stars based on the service's rating-->
+                        {% for _ in range(service.rating) %}
+                            <i class="fa fa-star" aria-hidden="true" style="color: red;"></i>
+                        {% endfor %}
+                        <div class="charges">
+                            <h4>{{ service.price }}/Basket</h4>
+                        </div>
+                    </div>
+                </div>
+                <hr style="margin: 20px 0;">
+                {% endfor %}
+                <!-- End of loop-->
+            </div>
+
             <div class="right-col"></div>
         </div>
         <hr style="margin: 30px 0;">
 
+        <!-- Footer code -->
 <div class="footer">
     <div class="btn">
         <div class="icon">
@@ -139,7 +78,7 @@
         </div>
         <span>Youtube</span>
     </div>      
-</div> 
-       
-   </body>
+    <!-- End of footer code -->   
+</div>        
+</body>
 </html>
