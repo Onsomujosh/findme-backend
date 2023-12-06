@@ -2,17 +2,17 @@
 <html>
    <head>
        <title>RegistrationForm</title>
-       <link rel="stylesheet" href="style.css">
+       <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-       <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
+       <link rel="stylesheet" type="text/css" href="{{ url_for('static', filname='/static/styles/style.css') }}">
    </head>
    <body>
 <div class="registration-page">
     <div class="container">
         <div class="row">
             <div class="col-2">
-                <img src="../static/images/registration.jpg" width="50%">
+                <img src="{{ url_for('static', filename='static/images/registration.jpg') }}" width="50%">
             </div>
             <div class="col-2">
                 <div class="form-container">
@@ -21,13 +21,13 @@
                         <span onclick="register()">Register</span>
                         <hr id="indicator">
                     </div>
-                    <form id="LoginForm" method="post" action="/login">
+                    <form id="LoginForm" method="post" action="{{ url_for('userLogin') }}">
                         <input type="text" placeholder="UserName">
                         <input type="password" placeholder="Password">
                         <button type="submit" class="button">Login</button>
-                        <a href="">Forgot Password</a>
+                        <a href="{{ # }}">Forgot Password</a>
                     </form>
-                    <form id="Registration-Form" method="post" action="/registration.html">
+                    <form id="Registration-Form" method="post" action="{{ url_for('application.html') }}">
                         <input type="text" name="username" placeholder="UserName">
 			<input type="text" name="contact" placeholder="Contact">
                         <input type="email" name="email" placeholder="Email">

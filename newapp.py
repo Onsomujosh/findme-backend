@@ -174,8 +174,15 @@ def add_applicant():
         db.session.add(applicant)
         db.session.commit()
     return render_template('services.html')
-        
-        
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        # Logic for sending a password reset email
+        flash('PAssword reset email sent successfully!', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('forgot_password.html')
 
 @app.route("/UserRegister", methods=['GET', 'POST'])
 def userRegister():
@@ -287,7 +294,8 @@ def getAllServices():
         {
             "id": service.id,
             "name": service.name,
-            "description": service.description
+            "contact": service.contact
+            "location": service.location
         }
         for service in service
     ]
