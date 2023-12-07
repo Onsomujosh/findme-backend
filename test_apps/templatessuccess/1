@@ -2,21 +2,21 @@
 <html>
    <head>
        <title>FindMe</title>
+       <link rel="stylesheet" href="/style.css">
        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-       <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
    </head>
    <body>
         <div class="canvas">
             <div class="container">
                 <div class="navigationbar">
                     <div class="logo">
-                        <img src="../static/images/ecommerce logo.jpg" width="100px" height="50">
+                        <img src="C:\Users\HP\Downloads\ecommerce logo.jpg" width="100px" height="50">
                     </div>
                     <nav>
                         <ul>
                             <li><a href="index.html">Home</a></li>
-                            <li><a href="application.html">Applicant</a></li>
+                            <li><a href="#about">About</a></li>
                             <li><a href="services.html">Services</a></li>
                             <li><a href="registration.html">Signin/Signup</a></li>
                         </ul>
@@ -33,7 +33,7 @@
                         <a href="services.html" class="button">Peep in &#x2192;</a>
                     </div>
                     <div class="column2-image">
-                        <img src="../static/images/cleaningimage.jpg" width="125px">
+                        <img src="C:\Users\HP\Downloads\cleaningimage.jpg" width="125px">
                     </div>
                 </div>
             </div>

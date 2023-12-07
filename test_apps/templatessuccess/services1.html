@@ -6,7 +6,6 @@
        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-       <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
    </head>
    <body>
         <!-- Navigation code -->
@@ -31,10 +30,10 @@
                 {% for service in services %}
                 <div class="Worker">
                     <div class="worker-info">
-                        <h3>{{ service.id }}</h3>
                         <h3>{{ service.name }}</h3>
                         <h3>{{ service.location }}</h3>
-                        <h3>{{ service.contact }}</h3>
+                        <h3>{{ service.description }}</h3>
+                        <h3>{{ service.contact }}</h3>                        
                     </div>
                 </div>
                 <hr style="margin: 20px 0;">

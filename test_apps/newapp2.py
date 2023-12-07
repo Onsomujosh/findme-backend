@@ -140,18 +140,14 @@ def index_page():
 @app.route('/services.html', strict_slashes=False)
 def services_page():
     # Fetch services data from the database
-    services = db.session.query(User).all()
-    services_list2 = []
-    for service in services:
-        key_value = {"id": service.id, "name": service.first_name, "contact": service.contact, "location": service.location}
-        services_list2.append(key_value)
-#services_list2 = [{"id":1, "name":"Eric", "contact":7001, "location":"Kenya"}]
+    services_data = getAllServices()
+
     #Pass the services data to the template
-    return render_template('services.html', services=services_list2)
+    return render_template('services.html', services=services_data)
 
 @app.route('/application.html', strict_slashes=False)
 def application_page():
-    return render_template('services.html')
+    return render_template('application.html')
 
 @app.route('/registration.html', methods=['GET', 'POST'])
 def add_register():
@@ -165,7 +161,7 @@ def add_register():
         db.session.commit()
     return render_template('services.html')
 
-@app.route('/application2.html', methods=['GET', 'POST'])
+@app.route('/application.html', methods=['GET', 'POST'])
 def add_applicant():
     if request.method == 'POST':
         firstname = request.form['firstname']
@@ -178,15 +174,61 @@ def add_applicant():
         db.session.add(applicant)
         db.session.commit()
     return render_template('services.html')
+        
+        
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
+@app.route("/UserRegister", methods=['GET', 'POST'])
+def userRegister():
     if request.method == 'POST':
-        # Logic for sending a password reset email
-        flash('PAssword reset email sent successfully!', 'success')
-        return redirect("/registration.html")
+        cursor = mysql_connection.cursor(dictionary=True)
+
+        # Check if email, username, and phone already exist
+        email = request.json['email']
+        username = request.json['username']
+        phone = request.json['phone']
+
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        existing_email = cursor.fetchone()
+
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        existing_username = cursor.fetchone()
+
+        cursor.execute("SELECT * from USERS WHERE phone = %s", (phone,))
+        existing_phone = cursor.fetchone()
+
+        if existing_email:
+            cursor.close()
+            return jsonify(message='Email already exists'), 401
+        if existing_username:
+            cursor.close()
+            return jsonify(message='Username already exists'), 401
+        if existing_phone:
+            cursor.close()
+            return jsonify(message='Phone Number already exists'), 401
+        
+        if request.json['password'] != request.json['cpassword']:
+            cursor.close()
+            return jsonify(message='Password Not Matching!'), 401
+        
+        # Hash Passwords
+        hashed_password = bcrypt.generate_password_hash(request.json['password']).decode('utf-8')
+
+        # Generate access token
+        access_token = create_access_token(identity=email)
+
+        # Insert user into MySQL
+        cursor.execute("INSERT INTO users (email, password, username, phone, tokens) VALUES (%s, %s, %s, %s, %s, %s)", 
+                       (email, hashed_password, username, phone, str(access_token)))
+        mysql_connection.commit()
+
+        # Close cursor after commit
+        cursor.close()
+
+        # Set session email (if needed)
+        session['email'] = email
+
+        return jsonify(token=str(access_token)), 201
     
-    return render_template('forgot_password.html')
 
 @app.route("/userLogin", methods=['POST'])
 def userLogin():
@@ -238,27 +280,24 @@ def getAllServices():
     #cursor = mysql_connection.cursor(dictionary=True)
 
     # Retrieve all services from MySQL
-    services = db.session.query(Service).all()
+    services = User.query.all()
 
     # Convert the services to a list of dictionaries
-#   services_list = [
-#       {
-#           "id": service.id,
-#           "name": service.first_name,
-#           "contact": service.contact,
-#           "location": service.location,
-#       }
-#       for service in services
-#    ]
-    services_list2 = []
-    for service in services:
-        key_value = {"id": service.id, "name": service.first_name, "contact": service.contact, "location": service.location}
-        services_list2.append(key_value)
+    services_list = [
+        {
+            "id": service.id,
+            "name": service.first_name,
+            "description": service.contact,
+            "location": service.location
+        }
+        for service in services
+    ]
+
     # Convert the result to JSON
     #services_json = json.dumps(services, indent=2)
     #services_list = json.loads(services_json)
 
-    return jsonify(services_list2), 201
+    return jsonify(services_list), 201
 
 
 @app.route("/addComments", methods=['POST'])
